@@ -1,6 +1,6 @@
 {
   "name": "karma-time-stats-reporter",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Karma Reporter for test time stats",
   "author": "Christian Catalan",
   "repository": {
