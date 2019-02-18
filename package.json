@@ -2,6 +2,13 @@
   "name": "karma-time-stats-reporter",
   "version": "0.0.1",
   "description": "Karma Reporter for test time stats",
+  "author": "Christian Catalan",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/crcatala/karma-time-stats-reporter"
+  },
+  "license": "MIT",
+  "keywords": ["karma-plugin", "karma-reporter"],
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
@@ -35,7 +42,5 @@
     "test:lib:integration:examples": "karma start test/integration/examples/karma.conf.js",
     "test:lib:unit": "karma start test/unit/karma.unit.conf.js --single-run",
     "test:lib:unit:watch": "karma start test/unit/karma.unit.conf.js --auto-watch"
-  },
-  "author": "Christian Catalan",
-  "license": "MIT"
+  }
 }
