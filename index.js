@@ -79,7 +79,8 @@ function printTimingStats({
   totalCount,
   binSize,
   slowTestCount,
-  slowThreshold
+  slowThreshold,
+  write = console.log
 } = {}) {
   const keys = Object.keys(histogram);
   const printableData = [];
@@ -109,7 +110,7 @@ function printTimingStats({
     )
   });
 
-  console.log(
+  write(
     columnify(printableData, {
       showHeaders: false,
       config: {
@@ -123,7 +124,8 @@ function printTimingStats({
 function reportSlowestTests({
   specs = [],
   longestTestsCount = 0,
-  slowThreshold
+  slowThreshold,
+  write = console.log
 } = {}) {
   const slowestSpecs = specs
     .sort(function(a, b) {
@@ -140,7 +142,7 @@ function reportSlowestTests({
     };
   });
 
-  console.log(columnify(printableData, { showHeaders: false }));
+  write(columnify(printableData, { showHeaders: false }));
 }
 
 const TimeStatsReporter = function(baseReporterDecorator, config) {
@@ -165,9 +167,9 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
     });
   };
 
-  this.onRunComplete = function(browsers, _results) {
+  this.onRunComplete = (browsers, _results) => {
     if (reporterOptions.reportTimeStats) {
-      console.log("\nTest Time Stats");
+      this.write("\nTest Time Stats\n");
       const {
         histogram,
         binSize,
@@ -183,19 +185,23 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
         totalCount: specs.length,
         binSize,
         slowTestCount,
-        slowThreshold
+        slowThreshold,
+        write: this.write.bind(this)
       });
     }
 
     if (reporterOptions.reportSlowestTests) {
-      console.log("\nSlowest Tests");
+      this.write("\nSlowest Tests\n");
       reportSlowestTests({
         singleBrowser: browsers.length === 1,
         specs,
         slowThreshold: reporterOptions.slowThreshold,
-        longestTestsCount: reporterOptions.longestTestsCount
+        longestTestsCount: reporterOptions.longestTestsCount,
+        write: this.write.bind(this)
       });
     }
+
+    this.write("\n\n");
   };
 };
 
