@@ -32,19 +32,16 @@ function percentageBar(
   const bgCharacterCount = totalCharacters - fgCharacterCount;
 
   const fg = foregroundCharacter.repeat(fgCharacterCount);
-  let bg = backgroundCharacter.repeat(bgCharacterCount);
-  let percentageValueText = "";
+  const bg = backgroundCharacter.repeat(bgCharacterCount);
 
-  if (bgCharacterCount > 3) {
-    bg = bg.slice(0, -3);
+  let percentageValueText = `${Math.floor(val)}%`;
 
-    percentageValueText = `${Math.floor(val)}%`;
-    if (percentageValueText.length === 2) {
-      percentageValueText = " " + percentageValueText;
-    }
+  if (percentageValueText.length < 4) {
+    percentageValueText =
+      " ".repeat(4 - percentageValueText.length) + percentageValueText;
   }
 
-  return `${boundaryStartCharacter}${fg}${bg}${percentageValueText}${boundaryEndCharacter}`;
+  return `${boundaryStartCharacter}${fg}${bg}${boundaryEndCharacter}${boundaryStartCharacter}${percentageValueText}${boundaryEndCharacter}`;
 }
 
 function getTimingStatsForSpecs({ specs = [], binSize, slowThreshold } = {}) {
@@ -191,7 +188,7 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
     }
 
     if (reporterOptions.reportSlowestTests) {
-      this.write("\nSlowest Tests\n");
+      this.write("\n\nSlowest Tests\n");
       reportSlowestTests({
         singleBrowser: browsers.length === 1,
         specs,
