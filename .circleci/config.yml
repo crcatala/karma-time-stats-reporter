@@ -23,7 +23,7 @@ jobs:
             - ~/.npm
       - run:
           name: Unit Tests
-          command: ci:test:lib:unit
+          command: npm run ci:test:lib:unit
   integration_tests:
     working_directory: ~/repo
     executor: node_stretch
@@ -43,7 +43,7 @@ jobs:
             - ~/.npm
       - run:
           name: Integration Tests
-          command: ci:test:lib:integration
+          command: npm run ci:test:lib:integration
 workflows:
   version: 2
   tests:
