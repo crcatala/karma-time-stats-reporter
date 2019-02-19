@@ -1,5 +1,13 @@
 # karma-time-stats-reporter
 
+[![CircleCI](https://circleci.com/gh/crcatala/karma-time-stats-reporter.svg?style=svg)](https://circleci.com/gh/crcatala/karma-time-stats-reporter)
+
+## Description
+
+A Karma Reporter for test times stats. See histogram of time your tests take, and identify slow tests.
+
+<img src="screenshots/screenshot.jpg" width="500"/>
+
 ## Use In Project
 
 Install package:
