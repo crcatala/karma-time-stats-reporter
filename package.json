@@ -47,6 +47,8 @@
     "test:lib:integration:examples": "karma start test/integration/examples/karma.conf.js",
     "test:lib:integration:examples:multibrowser": "karma start test/integration/examples/karma.conf.js --browsers=Chrome,ChromeHeadless",
     "test:lib:unit": "karma start test/unit/karma.unit.conf.js --single-run",
-    "test:lib:unit:watch": "karma start test/unit/karma.unit.conf.js --auto-watch"
+    "test:lib:unit:watch": "karma start test/unit/karma.unit.conf.js --auto-watch",
+    "ci:test:lib:unit": "karma start test/unit/karma.unit.conf.js --single-run",
+    "ci:test:lib:integration": "bats test/integration"
   }
 }
