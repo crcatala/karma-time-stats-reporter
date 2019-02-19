@@ -3,11 +3,6 @@ executors:
   node_stretch:
     docker:
       - image: circleci/node:8.12.0-stretch-browsers
-commands:
-  install_deps_and_run_tests:
-    parameters:
-      npm_run_test_command:
-        type: string
 jobs:
   unit_tests:
     working_directory: ~/repo
