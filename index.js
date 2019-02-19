@@ -119,6 +119,7 @@ function printTimingStats({
 }
 
 function reportSlowestTests({
+  // singleBrowser = true,
   specs = [],
   longestTestsCount = 0,
   slowThreshold,
@@ -133,10 +134,18 @@ function reportSlowestTests({
   const printableData = slowestSpecs.map(spec => {
     const type = spec.timeInMilliseconds >= slowThreshold ? "warn" : "info";
 
-    return {
+    let data = {
       time: textFormat(`${spec.timeInMilliseconds}ms`, { type }),
-      name: textFormat(`${spec.name}`, { type })
+      name: textFormat(spec.name, { type })
     };
+
+    // console.log(spec);
+
+    // if (!singleBrowser) {
+    //   data.browser = textFormat(spec.browser, { type });
+    // }
+
+    return data;
   });
 
   write(columnify(printableData, { showHeaders: false }));
@@ -165,40 +174,58 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
   };
 
   this.onRunComplete = (browsers, _results) => {
-    if (reporterOptions.reportTimeStats) {
-      this.write("\nTest Time Stats\n");
-      const {
-        histogram,
-        binSize,
-        slowTestCount,
-        slowThreshold
-      } = getTimingStatsForSpecs({
-        specs,
-        binSize: reporterOptions.binSize,
-        slowThreshold: reporterOptions.slowThreshold
-      });
-      printTimingStats({
-        histogram,
-        totalCount: specs.length,
-        binSize,
-        slowTestCount,
-        slowThreshold,
-        write: this.write.bind(this)
-      });
-    }
+    browsers.forEach(browser => {
+      const browserName = browser.name;
+      let browserNameHeaderSuffix = "";
+      if (browsers.length > 1) {
+        browserNameHeaderSuffix = ` - ${browserName}`;
+      }
 
-    if (reporterOptions.reportSlowestTests) {
-      this.write("\n\nSlowest Tests\n");
-      reportSlowestTests({
-        singleBrowser: browsers.length === 1,
-        specs,
-        slowThreshold: reporterOptions.slowThreshold,
-        longestTestsCount: reporterOptions.longestTestsCount,
-        write: this.write.bind(this)
-      });
-    }
+      const specsForBrowser = specs.filter(x => x.browser === browserName);
 
-    this.write("\n\n");
+      if (reporterOptions.reportTimeStats) {
+        const header = chalk.bold(
+          `\nTest Time Stats${browserNameHeaderSuffix}\n`
+        );
+
+        this.write(header);
+
+        const {
+          histogram,
+          binSize,
+          slowTestCount,
+          slowThreshold
+        } = getTimingStatsForSpecs({
+          specs: specsForBrowser,
+          binSize: reporterOptions.binSize,
+          slowThreshold: reporterOptions.slowThreshold
+        });
+        printTimingStats({
+          histogram,
+          totalCount: specsForBrowser.length,
+          binSize,
+          slowTestCount,
+          slowThreshold,
+          write: this.write.bind(this)
+        });
+      }
+
+      if (reporterOptions.reportSlowestTests) {
+        const header = chalk.bold(
+          `\n\nSlowest Tests${browserNameHeaderSuffix}\n`
+        );
+        this.write(header);
+        reportSlowestTests({
+          singleBrowser: browsers.length === 1,
+          specs: specsForBrowser,
+          slowThreshold: reporterOptions.slowThreshold,
+          longestTestsCount: reporterOptions.longestTestsCount,
+          write: this.write.bind(this)
+        });
+      }
+
+      this.write("\n\n");
+    });
   };
 };
 
