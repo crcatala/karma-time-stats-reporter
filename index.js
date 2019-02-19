@@ -6,6 +6,7 @@ const defaultReporterOptions = {
   reportSlowestTests: true,
   binSize: 100,
   slowThreshold: 500,
+  reportOnlyBeyondThreshold: false,
   longestTestsCount: 5
 };
 
@@ -119,13 +120,17 @@ function printTimingStats({
 }
 
 function reportSlowestTests({
-  // singleBrowser = true,
   specs = [],
   longestTestsCount = 0,
   slowThreshold,
+  reportOnlyBeyondThreshold = true,
   write = console.log
 } = {}) {
-  const slowestSpecs = specs
+  let slowestSpecs = specs;
+  if (reportOnlyBeyondThreshold) {
+    slowestSpecs = specs.filter(x => x.timeInMilliseconds >= slowThreshold);
+  }
+  slowestSpecs = slowestSpecs
     .sort(function(a, b) {
       return a.timeInMilliseconds < b.timeInMilliseconds ? 1 : -1;
     })
@@ -134,18 +139,10 @@ function reportSlowestTests({
   const printableData = slowestSpecs.map(spec => {
     const type = spec.timeInMilliseconds >= slowThreshold ? "warn" : "info";
 
-    let data = {
+    return {
       time: textFormat(`${spec.timeInMilliseconds}ms`, { type }),
       name: textFormat(spec.name, { type })
     };
-
-    // console.log(spec);
-
-    // if (!singleBrowser) {
-    //   data.browser = textFormat(spec.browser, { type });
-    // }
-
-    return data;
   });
 
   write(columnify(printableData, { showHeaders: false }));
@@ -217,6 +214,7 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
         this.write(header);
         reportSlowestTests({
           singleBrowser: browsers.length === 1,
+          reportOnlyBeyondThreshold: reporterOptions.reportOnlyBeyondThreshold,
           specs: specsForBrowser,
           slowThreshold: reporterOptions.slowThreshold,
           longestTestsCount: reporterOptions.longestTestsCount,
