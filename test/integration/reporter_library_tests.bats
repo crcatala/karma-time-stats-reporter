@@ -42,6 +42,13 @@ RUN_EXAMPLE_KARMA_TESTS_COMMAND="npm run test:lib:integration:examples"
   [[ "$result" = "1" ]]
 }
 
+@test "Reporter -> Test Time Stats -> Normalizes Slow Threshold to evenly divisible value" {
+  expected_text=">600ms"
+  result="$(TIME_STATS_REPORTER_SLOW_THRESHOLD=501 SPEC=**/quick.spec.js $RUN_EXAMPLE_KARMA_TESTS_COMMAND | grep "$expected_text" | wc -l | tr -d ' ')"
+
+  [[ "$result" = "1" ]]
+}
+
 @test "Reporter -> Slowest Tests -> Is Enabled By Default" {
   result="$(SPEC=**/quick.spec.js $RUN_EXAMPLE_KARMA_TESTS_COMMAND)"
   
