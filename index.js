@@ -134,6 +134,52 @@ function printTimingStats({
       }
     })
   );
+  write("\n");
+}
+
+function getSlowStatsSummary({ specs, slowThreshold } = {}) {
+  const totalTime = specs.reduce(
+    (acc, spec) => acc + spec.timeInMilliseconds,
+    0
+  );
+
+  const slowestSpecs = specs.filter(x => x.timeInMilliseconds >= slowThreshold);
+  const slowTestTime = slowestSpecs.reduce(
+    (acc, spec) => acc + spec.timeInMilliseconds,
+    0
+  );
+
+  return {
+    totalTime,
+    slowTestTime,
+    slowTestCount: slowestSpecs.length
+  };
+}
+
+function printSlowTestSummary({
+  specs = [],
+  write = console.log,
+  slowThreshold
+} = {}) {
+  const { totalTime, slowTestTime, slowTestCount } = getSlowStatsSummary({
+    specs,
+    slowThreshold
+  });
+
+  const percentageSlowTestCount = (
+    (slowTestCount / specs.length) *
+    100
+  ).toFixed(1);
+  const percentageSlowTestTime = ((slowTestTime / totalTime) * 100).toFixed(1);
+
+  const type = slowTestCount > 0 ? "warn" : "info";
+
+  write(
+    textFormat(
+      `\n${percentageSlowTestCount}% of tests were considered slow and accounted for ${percentageSlowTestTime}% of test suite time`,
+      { type }
+    )
+  );
 }
 
 function reportSlowestTests({
@@ -199,6 +245,7 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
         );
 
         this.write(header);
+        this.write("Percentages reported are based on number of tests\n");
 
         const {
           histogram,
@@ -218,11 +265,15 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
           slowThreshold,
           write: this.write.bind(this)
         });
+
+        if (slowTestCount > 0) {
+          printSlowTestSummary({ specs: specsForBrowser, slowThreshold });
+        }
       }
 
       if (reporterOptions.reportSlowestTests) {
         const header = chalk.bold(
-          `\n\nSlowest Tests${browserNameHeaderSuffix}\n`
+          `\nSlowest Tests${browserNameHeaderSuffix}\n`
         );
         this.write(header);
         reportSlowestTests({
@@ -246,5 +297,6 @@ module.exports = {
   "reporter:time-stats": ["type", TimeStatsReporter],
   getTimingStatsForSpecs,
   printTimingStats,
-  getReporterOptions
+  getReporterOptions,
+  getSlowStatsSummary
 };

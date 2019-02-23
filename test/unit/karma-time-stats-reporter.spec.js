@@ -16,7 +16,8 @@ const specs = [
   { timeInMilliseconds: 402 },
   { timeInMilliseconds: 403 },
   { timeInMilliseconds: 404 },
-  { timeInMilliseconds: 500 }
+  { timeInMilliseconds: 500 },
+  { timeInMilliseconds: 1000 }
 ];
 
 describe("karma-time-stats-reporter", () => {
@@ -92,7 +93,7 @@ describe("karma-time-stats-reporter", () => {
           3: 4,
           4: 5
         },
-        slowTestCount: 1,
+        slowTestCount: 2,
         binSize: 100,
         slowThreshold: 500
       });
@@ -123,6 +124,21 @@ describe("karma-time-stats-reporter", () => {
       expect(console.log.getCall(0).args[0]).to.match(/\[200-300ms\]\s+3/);
       expect(console.log.getCall(0).args[0]).to.match(/\[300-400ms\]\s+4/);
       expect(console.log.getCall(0).args[0]).to.match(/\[400-500ms\]\s+5/);
+    });
+  });
+
+  describe("#getSlowStatsSummary", () => {
+    it("returns", () => {
+      const result = TimeStatsReporter.getSlowStatsSummary({
+        specs,
+        slowThreshold: 500
+      });
+
+      expect(result).to.deep.eq({
+        slowTestCount: 2,
+        totalTime: 5520,
+        slowTestTime: 1500
+      });
     });
   });
 });
