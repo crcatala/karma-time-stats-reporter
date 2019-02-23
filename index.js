@@ -7,7 +7,8 @@ const defaultReporterOptions = {
   binSize: 100,
   slowThreshold: 500,
   reportOnlyBeyondThreshold: false,
-  longestTestsCount: 5
+  longestTestsCount: 5,
+  showSlowTestRankNumber: false
 };
 
 function textFormat(val, { type = "info" } = {}) {
@@ -187,6 +188,7 @@ function reportSlowestTests({
   longestTestsCount = 0,
   slowThreshold,
   reportOnlyBeyondThreshold = true,
+  showSlowTestRankNumber = false,
   write = console.log
 } = {}) {
   let slowestSpecs = specs;
@@ -199,11 +201,14 @@ function reportSlowestTests({
     })
     .slice(0, longestTestsCount);
 
-  const printableData = slowestSpecs.map(spec => {
+  const printableData = slowestSpecs.map((spec, index) => {
     const type = spec.timeInMilliseconds >= slowThreshold ? "warn" : "info";
+    const testRankNumber = showSlowTestRankNumber ? `${index + 1}) ` : "";
 
     return {
-      time: textFormat(`${spec.timeInMilliseconds}ms`, { type }),
+      time: textFormat(`${testRankNumber}${spec.timeInMilliseconds}ms`, {
+        type
+      }),
       name: textFormat(spec.name, { type })
     };
   });
@@ -282,6 +287,7 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
           specs: specsForBrowser,
           slowThreshold: reporterOptions.slowThreshold,
           longestTestsCount: reporterOptions.longestTestsCount,
+          showSlowTestRankNumber: reporterOptions.showSlowTestRankNumber,
           write: this.write.bind(this)
         });
       }
