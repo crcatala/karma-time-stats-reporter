@@ -19,6 +19,23 @@ function textFormat(val, { type = "info" } = {}) {
   }
 }
 
+function getReporterOptions({
+  config,
+  reporterOptionsKey = "timeStatsReporter"
+} = {}) {
+  const reporterOptions = Object.assign(
+    defaultReporterOptions,
+    config[reporterOptionsKey]
+  );
+
+  // normalize slowThreshold
+  reporterOptions.slowThreshold =
+    Math.ceil(reporterOptions.slowThreshold / reporterOptions.binSize) *
+    reporterOptions.binSize;
+
+  return reporterOptions;
+}
+
 function percentageBar(
   val,
   {
@@ -151,11 +168,7 @@ function reportSlowestTests({
 const TimeStatsReporter = function(baseReporterDecorator, config) {
   baseReporterDecorator(this);
 
-  const reporterOptionsKey = "timeStatsReporter";
-  const reporterOptions = Object.assign(
-    defaultReporterOptions,
-    config[reporterOptionsKey]
-  );
+  const reporterOptions = getReporterOptions({ config });
 
   const specs = [];
 
@@ -232,5 +245,6 @@ TimeStatsReporter.$inject = ["baseReporterDecorator", "config"];
 module.exports = {
   "reporter:time-stats": ["type", TimeStatsReporter],
   getTimingStatsForSpecs,
-  printTimingStats
+  printTimingStats,
+  getReporterOptions
 };

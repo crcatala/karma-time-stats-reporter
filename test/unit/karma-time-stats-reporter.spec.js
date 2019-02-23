@@ -20,6 +20,62 @@ const specs = [
 ];
 
 describe("karma-time-stats-reporter", () => {
+  describe("#getReporterOptions", () => {
+    it("normalizes the slowTheshold option to a value evenly divisible by binSize", () => {
+      const scenarios = [
+        {
+          config: {
+            timeStatsReporter: {
+              binSize: 100,
+              slowThreshold: 50
+            }
+          },
+          expectedSlowThreshold: 100
+        },
+        {
+          config: {
+            timeStatsReporter: {
+              binSize: 100,
+              slowThreshold: 100
+            }
+          },
+          expectedSlowThreshold: 100
+        },
+        {
+          config: {
+            timeStatsReporter: {
+              binSize: 100,
+              slowThreshold: 500
+            }
+          },
+          expectedSlowThreshold: 500
+        },
+        {
+          config: {
+            timeStatsReporter: {
+              binSize: 100,
+              slowThreshold: 501
+            }
+          },
+          expectedSlowThreshold: 600
+        }
+      ];
+
+      scenarios.forEach((scenario, index) => {
+        const result = TimeStatsReporter.getReporterOptions({
+          config: scenario.config
+        });
+
+        expect(result.slowThreshold).to.eq(
+          scenario.expectedSlowThreshold,
+          `binSize: ${
+            scenario.config.timeStatsReporter.binSize
+          }, slowThreshold: ${scenario.config.timeStatsReporter.slowThreshold}`
+        );
+      });
+    });
+  });
+
   describe("#getTimingStatsForSpecs", () => {
     it("returns histogram and number of slow tests", () => {
       const result = TimeStatsReporter.getTimingStatsForSpecs({
