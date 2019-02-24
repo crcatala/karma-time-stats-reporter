@@ -221,7 +221,7 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
 
   const reporterOptions = getReporterOptions({ config });
 
-  const specs = [];
+  let specs = [];
 
   this.onSpecComplete = function(browser, result) {
     const name = result.suite.join(" ") + " " + result.description;
@@ -294,6 +294,8 @@ const TimeStatsReporter = function(baseReporterDecorator, config) {
 
       this.write("\n\n");
     });
+
+    specs = [];
   };
 };
 
