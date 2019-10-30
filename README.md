@@ -20,6 +20,7 @@ in your karma config:
 module.exports = function(config) {
   // other keys ommited for brevity
   config.set({
+    plugins: ['karma-time-stats-reporter'],
     reporters: ["dots", "time-stats"],
     // This is config options for the reporter. Listed here are the defaults if you don't provide this any options
     timeStatsReporter: {
