@@ -34,7 +34,7 @@ module.exports = function(config) {
 
       reportSlowestTests: true,        // Print top slowest tests
 
-      showSlowTestRankNumber: false    // Displays rank number next to slow tests, e.g. `1) Slow Test`
+      showSlowTestRankNumber: false,   // Displays rank number next to slow tests, e.g. `1) Slow Test`
 
       longestTestsCount: 5,            // Number of top slowest tests to list
                                        // Set to `Infinity` to show all slow tests. Useful in combination with `reportOnlyBeyondThreshold` as `true`
